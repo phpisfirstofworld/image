@@ -54,7 +54,7 @@ func NewResource(sourceImageResource image2.Image, dealImageResource image2.Imag
 	return &resource{sourceImageResource: sourceImageResource, dealImageResource: dealImageResource, error: nil, image: image}
 }
 
-func (r *resource) Resize(percent int) *resource {
+func (r *resource) ResizePercent(percent int) *resource {
 
 	if !(percent >= 1 && percent <= 100) {
 
@@ -70,6 +70,22 @@ func (r *resource) Resize(percent int) *resource {
 	r.dealImageResource = resize.Resize(uint(resizeWidth), 0, r.dealImageResource, resize.Lanczos3)
 
 	return r
+}
+
+func (r *resource) ResizeWidth(width int) *resource {
+
+	r.dealImageResource = resize.Resize(uint(width), 0, r.dealImageResource, resize.Lanczos3)
+
+	return r
+
+}
+
+func (r *resource) ResizeHeight(height int) *resource {
+
+	r.dealImageResource = resize.Resize(0, uint(height), r.dealImageResource, resize.Lanczos3)
+
+	return r
+
 }
 
 func (r *resource) Save(path string) error {

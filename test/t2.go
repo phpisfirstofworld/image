@@ -18,8 +18,9 @@ func main() {
 		return
 	}
 
-	//fmt.Println(res.ResizePercent(50).Save("img_save.png"))
+	//fmt.Println(res.ResizeWidth(200).Save("img_save.png"))
+	fmt.Println(res.ResizeHeight(200).Save("img_save.png"))
 
-	fmt.Printf("err :%+v\n", res.ResizePercent(50).OverSave())
+	//fmt.Printf("err :%+v\n", res.ResizePercent(50).OverSave())
 
 }
