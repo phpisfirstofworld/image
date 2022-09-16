@@ -30,10 +30,10 @@ func main() {
 	}
         
 	//尺寸缩放50%
-	fmt.Println(res.Resize(50).Save("img_save.png"))
+	fmt.Println(res.ResizePercent(50).Save("img_save.png"))
     
 	//尺寸缩放50%并覆盖保存
-	//fmt.Printf("err :%+v\n", res.Resize(50).OverSave())
+	//fmt.Printf("err :%+v\n", res.ResizePercent(50).OverSave())
 
 }
 
