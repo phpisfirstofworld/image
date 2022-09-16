@@ -1,4 +1,4 @@
-module github.com/PeterYangs/image
+module github.com/phpisfirstofworld/image
 
 go 1.18
 

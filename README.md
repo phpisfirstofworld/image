@@ -13,7 +13,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/PeterYangs/image"
+	"github.com/phpisfirstofworld/image"
 )
 
 func main() {
