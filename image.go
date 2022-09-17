@@ -2,20 +2,32 @@ package image
 
 import (
 	"github.com/nfnt/resize"
+	"github.com/phpisfirstofworld/size"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	image2 "image"
+	"image/gif"
+	"image/jpeg"
 	"image/png"
+	"io/ioutil"
+	"net/http"
 	"os"
+	"strings"
 )
 
 type image struct {
 	path string
+	size *size.Size
 }
 
 func NewImage() *image {
 
 	return &image{}
+}
+
+func (i *image) GetSize() *size.Size {
+
+	return i.size
 }
 
 func (i *image) LoadImage(path string) (*resource, error) {
@@ -29,13 +41,78 @@ func (i *image) LoadImage(path string) (*resource, error) {
 
 	i.path = path
 
+	info, infoErr := sourceFile.Stat()
+
+	if infoErr != nil {
+
+		return nil, errors.WithStack(infoErr)
+	}
+
+	i.size = size.NewSize(info.Size())
+
 	defer sourceFile.Close()
 
-	sourceImage, err := png.Decode(sourceFile)
+	b, readErr := ioutil.ReadAll(sourceFile)
 
-	if err != nil {
+	if readErr != nil {
 
-		return nil, errors.WithStack(err)
+		return nil, errors.WithStack(readErr)
+	}
+
+	types := http.DetectContentType(b)
+
+	var sourceImage image2.Image
+
+	switch types {
+
+	case "image/jpeg":
+
+		sourceImage, err = jpeg.Decode(strings.NewReader(string(b)))
+
+		if err != nil {
+
+			return nil, errors.WithStack(err)
+		}
+
+		break
+
+	case "image/jpg":
+
+		sourceImage, err = jpeg.Decode(strings.NewReader(string(b)))
+
+		if err != nil {
+
+			return nil, errors.WithStack(err)
+		}
+
+		break
+
+	case "image/png":
+
+		sourceImage, err = png.Decode(strings.NewReader(string(b)))
+
+		if err != nil {
+
+			return nil, errors.WithStack(err)
+		}
+
+		break
+
+	case "image/gif":
+
+		sourceImage, err = gif.Decode(strings.NewReader(string(b)))
+
+		if err != nil {
+
+			return nil, errors.WithStack(err)
+		}
+
+		break
+
+	default:
+
+		return nil, errors.WithStack(errors.New("暂不支持(" + types + ")此格式"))
+
 	}
 
 	return NewResource(sourceImage, sourceImage, i), nil
@@ -52,6 +129,11 @@ type resource struct {
 func NewResource(sourceImageResource image2.Image, dealImageResource image2.Image, image *image) *resource {
 
 	return &resource{sourceImageResource: sourceImageResource, dealImageResource: dealImageResource, error: nil, image: image}
+}
+
+func (r *resource) GetSourceImageResource() image2.Image {
+
+	return r.sourceImageResource
 }
 
 func (r *resource) ResizePercent(percent int) *resource {
